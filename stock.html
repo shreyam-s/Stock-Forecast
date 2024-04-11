@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Forecast</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>Stock Forecast</h1>
+
+    <label for="symbol">Enter Stock Symbol:</label>
+    <input type="text" id="symbol" placeholder="Ex:- AAPL">
+    <button onclick="getStockForecast()">Get Forecast</button>
+
+    <div id="stock-info"></div>
+
+    <h2>Stock Search History</h2>
+    <table id="stock-table">
+        <thead>
+            <tr>
+                <th>Stock Symbol</th>
+                <th>Latest Close Price</th>
+            </tr>
+        </thead>
+        <tbody id="stock-history"></tbody>
+    </table>
+
+    <script>
+        function getStockForecast() {
+            const apiKey = 'YOUR_ALPHA_VANTAGE_API_KEY'; // Replace with your Alpha Vantage API key
+            const symbolInput = document.getElementById('symbol');
+            const symbol = symbolInput.value.toUpperCase();
+
+            // Check if the symbol is provided
+            if (!symbol) {
+                alert('Please enter a stock symbol.');
+                return;
+            }
+
+            // Fetch stock data from Alpha Vantage API
+            fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${apiKey}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Extract relevant data for forecast display
+                    const latestData = data['Time Series (Daily)'];
+                    const latestDate = Object.keys(latestData)[0];
+                    const latestClose = parseFloat(latestData[latestDate]['4. close']).toFixed(2);
+
+                    // Display stock information
+                    const stockInfo = document.getElementById('stock-info');
+                    stockInfo.innerHTML = `
+                        <h2>${symbol} Stock Forecast</h2>
+                        <p>Latest Close Price: $${latestClose}</p>
+                        <p>More forecast details can be displayed here...</p>
+                    `;
+
+                    // Update stock history table
+                    updateStockHistory(symbol, latestClose);
+                })
+                .catch(error => {
+                    console.error('Error fetching stock data:', error);
+                    alert('Failed to fetch stock data. Please try again.');
+                });
+        }
+
+        function updateStockHistory(symbol, latestClose) {
+            // Update stock history table
+            const stockHistoryTable = document.getElementById('stock-history');
+            const newRow = stockHistoryTable.insertRow(0);
+            const cell1 = newRow.insertCell(0);
+            const cell2 = newRow.insertCell(1);
+
+            cell1.textContent = symbol;
+            cell2.textContent = `$${latestClose}`;
+        }
+    </script>
+</body>
+</html>
