@@ -4,7 +4,6 @@ Designed and developed a web application that provides real-time stock price inf
 
 
 
-## 📌 **Live Site URL:** <a href="https://stockforecast.netlify.app/">**Visit Now** 🚀</a>
 
 <br>
 
